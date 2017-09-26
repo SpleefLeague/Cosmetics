@@ -1,0 +1,17 @@
+name: Cosmetics
+author: SpleefLeague
+authors: [Joba, NickM13]
+main: com.spleefleague.cosmetics.Cosmetics
+version: 1.0
+depend: [SpleefLeagueCore]
+commands:
+    balance:
+        despription: Display the balance of a player
+        aliases: [bal, coins]
+        usage:
+            /<command> [player]
+    pay:
+        description: Send money to a player
+        aliases: cosmetics
+        usage:
+            /<command> [player] [amount]
