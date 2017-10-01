@@ -24,7 +24,7 @@ public class payDispatcher implements Dispatcher {
     valid = false
     || src == CommandSource.PLAYER;
     if(valid) {
-      result = sendMoneyFromPlayer0(sender, instance, args);
+      result = sendMoney0(sender, instance, args);
       if(result.getType() == DispatchResultType.SUCCESS) {
         return result;
       }
@@ -32,7 +32,7 @@ public class payDispatcher implements Dispatcher {
     valid = false
     || src == CommandSource.PLAYER;
     if(valid) {
-      result = sendMoneyFromAdmin1(sender, instance, args);
+      result = sendMoneyAdmin1(sender, instance, args);
       if(result.getType() == DispatchResultType.SUCCESS) {
         return result;
       }
@@ -40,7 +40,7 @@ public class payDispatcher implements Dispatcher {
     return result;
   }
 
-  private DispatchResult sendMoneyFromPlayer0(CommandSender sender, pay instance, String[] args) {
+  private DispatchResult sendMoney0(CommandSender sender, pay instance, String[] args) {
     int position = 0;
     String arg;
     Player param0;
@@ -59,11 +59,11 @@ public class payDispatcher implements Dispatcher {
     }
     if(position != args.length) return new DispatchResult(DispatchResultType.NO_VALID_ROUTE);
     Player senderCasted = ((Player)sender);
-    instance.sendMoneyFromPlayer(senderCasted, param0, param1);
+    instance.sendMoney(senderCasted, param0, param1);
     return new DispatchResult(DispatchResultType.SUCCESS);
   }
 
-  private DispatchResult sendMoneyFromAdmin1(CommandSender sender, pay instance, String[] args) {
+  private DispatchResult sendMoneyAdmin1(CommandSender sender, pay instance, String[] args) {
     int position = 0;
     String arg;
     int param0;
@@ -77,7 +77,7 @@ public class payDispatcher implements Dispatcher {
     }
     if(position != args.length) return new DispatchResult(DispatchResultType.NO_VALID_ROUTE);
     Player senderCasted = ((Player)sender);
-    instance.sendMoneyFromAdmin(senderCasted, param0);
+    instance.sendMoneyAdmin(senderCasted, param0);
     return new DispatchResult(DispatchResultType.SUCCESS);
   }
 }

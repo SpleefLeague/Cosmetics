@@ -19,15 +19,12 @@ import org.bukkit.inventory.ItemStack;
  */
 
 public class CosmeticBase extends DBEntity implements DBLoadable, DBSaveable {
-    public enum CosmeticType {
-        Clothes,
-        Effect
-    }
     public enum CosmeticSlot {
         Hat,
         Armor,
         Particle,
-        Status
+        Status,
+        Shovel
     }
     @DBLoad(fieldName="_id")
     protected long id;
@@ -35,14 +32,14 @@ public class CosmeticBase extends DBEntity implements DBLoadable, DBSaveable {
     protected String name;
     @DBLoad(fieldName="description")
     protected String description;
-    @DBLoad(fieldName="type")
-    protected CosmeticType type;
     @DBLoad(fieldName="slot")
     protected CosmeticSlot slot;
     @DBLoad(fieldName="price")
     protected long price;
     @DBLoad(fieldName="material")
     protected Material material;
+    @DBLoad(fieldName="submenu")
+    protected boolean submenu;
     protected int purchaseMenuPos;
     
     public CosmeticBase() {
@@ -69,10 +66,6 @@ public class CosmeticBase extends DBEntity implements DBLoadable, DBSaveable {
         return description;
     }
     
-    public CosmeticType getType() {
-        return type;
-    }
-    
     public CosmeticSlot getSlot() {
         return slot;
     }
@@ -83,6 +76,10 @@ public class CosmeticBase extends DBEntity implements DBLoadable, DBSaveable {
     
     public Material getMaterial() {
         return material;
+    }
+    
+    public boolean hasSubmenu() {
+        return submenu;
     }
     
     public ItemStack getItemStack() {

@@ -6,25 +6,26 @@
 package com.spleefleague.cosmetics.cosmetic.item;
 
 import com.spleefleague.entitybuilder.DBLoad;
+import org.bukkit.Particle;
 import org.bukkit.entity.Player;
-import org.bukkit.potion.PotionEffect;
-import org.bukkit.potion.PotionEffectType;
+import org.bukkit.util.Vector;
 
 /**
  *
  * @author NickM13
  */
-public class CosmeticEffectStatus extends CosmeticBase {
+public class CosmeticParticle extends CosmeticBase {
     @DBLoad(fieldName="effect")
-    String effect;
+    Particle effect;
     
-    public CosmeticEffectStatus() {
+    public CosmeticParticle() {
         super();
     }
     
     @Override
     public void activateCosmetic(Player player) {
-        player.addPotionEffect(new PotionEffect(PotionEffectType.getByName(effect), 100, 1, true, false), true);
+        Vector deviation = new Vector(Math.random() % 1 - 0.5, Math.random() % 1 - 0.5, Math.random() % 1 - 0.5);
+        player.getWorld().spawnParticle(effect, player.getLocation().add(deviation), 50);
     }
     
     @Override

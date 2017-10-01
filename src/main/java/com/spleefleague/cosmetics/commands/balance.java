@@ -26,6 +26,6 @@ public class balance extends BasicCommand {
     @Endpoint(target = {PLAYER})
     public void showBalance(Player sender) {
         CosmeticPlayer cplayer = Cosmetics.getInstance().getPlayer(sender);
-        sender.sendMessage(ChatColor.GREEN + "You have " + ChatColor.GOLD + cplayer.getCoins() + " coins.");
+        sender.sendMessage(ChatColor.GREEN + "You have " + ChatColor.GOLD + cplayer.getCoins() + " coins" + ChatColor.GREEN + ".");
     }
 }

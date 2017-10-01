@@ -5,13 +5,13 @@
  */
 package com.spleefleague.cosmetics.cosmetic;
 
-import com.spleefleague.cosmetics.cosmetic.item.CosmeticClothesHat;
+import com.spleefleague.cosmetics.cosmetic.item.CosmeticHat;
 import com.spleefleague.cosmetics.cosmetic.item.CosmeticBase;
 import com.mongodb.client.MongoCursor;
 import com.spleefleague.cosmetics.Cosmetics;
-import com.spleefleague.cosmetics.cosmetic.item.CosmeticClothesArmor;
-import com.spleefleague.cosmetics.cosmetic.item.CosmeticEffectParticle;
-import com.spleefleague.cosmetics.cosmetic.item.CosmeticEffectStatus;
+import com.spleefleague.cosmetics.cosmetic.item.CosmeticArmor;
+import com.spleefleague.cosmetics.cosmetic.item.CosmeticParticle;
+import com.spleefleague.cosmetics.cosmetic.item.CosmeticStatus;
 import com.spleefleague.entitybuilder.DBLoadable;
 import com.spleefleague.entitybuilder.DBSaveable;
 import com.spleefleague.entitybuilder.EntityBuilder;
@@ -35,7 +35,7 @@ public class CosmeticLoader implements DBLoadable, DBSaveable {
         while (cosmeticDbc.hasNext()) {
             Document d = cosmeticDbc.next();
             try {
-                CosmeticClothesHat item = loadCosmeticClothesHat(d);
+                CosmeticHat item = loadCosmeticClothesHat(d);
                 if (item == null) continue;
                 item.setPurchaseMenuPos(cosmeticCount);
                 addCosmetic(item);
@@ -50,7 +50,7 @@ public class CosmeticLoader implements DBLoadable, DBSaveable {
         while (cosmeticDbc.hasNext()) {
             Document d = cosmeticDbc.next();
             try {
-                CosmeticClothesArmor item = loadCosmeticClothesArmor(d);
+                CosmeticArmor item = loadCosmeticClothesArmor(d);
                 if (item == null) continue;
                 item.setPurchaseMenuPos(cosmeticCount);
                 addCosmetic(item);
@@ -65,7 +65,7 @@ public class CosmeticLoader implements DBLoadable, DBSaveable {
         while (cosmeticDbc.hasNext()) {
             Document d = cosmeticDbc.next();
             try {
-                CosmeticEffectStatus item = loadCosmeticEffectStatus(d);
+                CosmeticStatus item = loadCosmeticEffectStatus(d);
                 if (item == null) continue;
                 item.setPurchaseMenuPos(cosmeticCount);
                 addCosmetic(item);
@@ -80,7 +80,7 @@ public class CosmeticLoader implements DBLoadable, DBSaveable {
         while (cosmeticDbc.hasNext()) {
             Document d = cosmeticDbc.next();
             try {
-                CosmeticEffectParticle item = loadCosmeticEffectParticle(d);
+                CosmeticParticle item = loadCosmeticEffectParticle(d);
                 if (item == null) continue;
                 item.setPurchaseMenuPos(cosmeticCount);
                 addCosmetic(item);
@@ -93,20 +93,20 @@ public class CosmeticLoader implements DBLoadable, DBSaveable {
         Cosmetics.getInstance().log("Loaded " + cosmeticItems.size() + " total cosmetics!");
     }
     
-    public CosmeticClothesHat loadCosmeticClothesHat(Document doc) {
-        return EntityBuilder.load(doc, CosmeticClothesHat.class);
+    public CosmeticHat loadCosmeticClothesHat(Document doc) {
+        return EntityBuilder.load(doc, CosmeticHat.class);
     }
     
-    public CosmeticClothesArmor loadCosmeticClothesArmor(Document doc) {
-        return EntityBuilder.load(doc, CosmeticClothesArmor.class);
+    public CosmeticArmor loadCosmeticClothesArmor(Document doc) {
+        return EntityBuilder.load(doc, CosmeticArmor.class);
     }
     
-    public CosmeticEffectStatus loadCosmeticEffectStatus(Document doc) {
-        return EntityBuilder.load(doc, CosmeticEffectStatus.class);
+    public CosmeticStatus loadCosmeticEffectStatus(Document doc) {
+        return EntityBuilder.load(doc, CosmeticStatus.class);
     }
     
-    public CosmeticEffectParticle loadCosmeticEffectParticle(Document doc) {
-        return EntityBuilder.load(doc, CosmeticEffectParticle.class);
+    public CosmeticParticle loadCosmeticEffectParticle(Document doc) {
+        return EntityBuilder.load(doc, CosmeticParticle.class);
     }
     
     public CosmeticBase getCosmetic(String name) {

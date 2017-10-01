@@ -9,10 +9,10 @@ import com.spleefleague.core.player.GeneralPlayer;
 import com.spleefleague.cosmetics.Cosmetics;
 import com.spleefleague.cosmetics.cosmetic.item.CosmeticBase;
 import com.spleefleague.cosmetics.cosmetic.item.CosmeticBase.CosmeticSlot;
-import com.spleefleague.cosmetics.cosmetic.item.CosmeticClothesArmor;
-import com.spleefleague.cosmetics.cosmetic.item.CosmeticClothesHat;
-import com.spleefleague.cosmetics.cosmetic.item.CosmeticEffectParticle;
-import com.spleefleague.cosmetics.cosmetic.item.CosmeticEffectStatus;
+import com.spleefleague.cosmetics.cosmetic.item.CosmeticArmor;
+import com.spleefleague.cosmetics.cosmetic.item.CosmeticHat;
+import com.spleefleague.cosmetics.cosmetic.item.CosmeticParticle;
+import com.spleefleague.cosmetics.cosmetic.item.CosmeticStatus;
 import com.spleefleague.entitybuilder.DBEntity;
 import com.spleefleague.entitybuilder.DBLoad;
 import com.spleefleague.entitybuilder.DBLoadable;
@@ -93,12 +93,16 @@ public class CosmeticPlayer extends GeneralPlayer {
     @DBLoad(fieldName="unlocked")
     public void setUnlockedCosmetics(ArrayList<String> cosmetics) {
         for(String name : cosmetics) {
-            System.out.println(name);
             unlockedCosmetics.put(name, Cosmetics.getInstance().getCosmetics().getCosmetic(name));
         }
     }
     
     public void changeCoins(long coins) {
+        this.coins += coins;
+    }
+    
+    public void gainCoinsSpleef(long coins) {
+        player.sendMessage(ChatColor.GREEN + "You gained " + ChatColor.GOLD + coins + " coins" + ChatColor.GREEN + " from your last match!");
         this.coins += coins;
     }
     
@@ -148,7 +152,7 @@ public class CosmeticPlayer extends GeneralPlayer {
         if(activeHat.equals("")) {
             player.getInventory().setHelmet(air);
         } else {
-            CosmeticClothesHat hat = (CosmeticClothesHat) Cosmetics.getInstance().getCosmetic(activeHat);
+            CosmeticHat hat = (CosmeticHat) Cosmetics.getInstance().getCosmetic(activeHat);
             hat.activateCosmetic(player);
         }
         if(activeArmor.equals("")) {
@@ -156,17 +160,17 @@ public class CosmeticPlayer extends GeneralPlayer {
             player.getInventory().setLeggings(air);
             player.getInventory().setBoots(air);
         } else {
-            CosmeticClothesArmor armor = (CosmeticClothesArmor) Cosmetics.getInstance().getCosmetic(activeArmor);
+            CosmeticArmor armor = (CosmeticArmor) Cosmetics.getInstance().getCosmetic(activeArmor);
             armor.activateCosmetic(player);
         }
         if(activeStatus.equals("")) {
         } else {
-            CosmeticEffectStatus status = (CosmeticEffectStatus) Cosmetics.getInstance().getCosmetic(activeStatus);
+            CosmeticStatus status = (CosmeticStatus) Cosmetics.getInstance().getCosmetic(activeStatus);
             status.activateCosmetic(player);
         }
         if(activeParticle.equals("")) {
         } else {
-            CosmeticEffectParticle particle = (CosmeticEffectParticle) Cosmetics.getInstance().getCosmetic(activeParticle);
+            CosmeticParticle particle = (CosmeticParticle) Cosmetics.getInstance().getCosmetic(activeParticle);
             particle.activateCosmetic(player);
         }
     }
@@ -191,7 +195,7 @@ public class CosmeticPlayer extends GeneralPlayer {
     
     public void makeParticleEffect() {
         if(activeParticle != "") {
-            Cosmetics.getInstance().getCosmetic(activeParticle);
+            Cosmetics.getInstance().getCosmetic(activeParticle).activateCosmetic(player);
         }
     }
     

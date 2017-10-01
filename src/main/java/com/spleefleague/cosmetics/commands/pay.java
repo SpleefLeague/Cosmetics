@@ -28,24 +28,25 @@ public class pay extends BasicCommand {
     }
     
     @Endpoint(target = {CommandSource.PLAYER})
-    public void sendMoneyFromPlayer(Player sender, @PlayerArg Player receiver, @IntArg int amt) {
+    public void sendMoney(Player sender, @PlayerArg Player receiver, @IntArg int amt) {
         CosmeticPlayer csender = Cosmetics.getInstance().getPlayer(sender);
         CosmeticPlayer creceiver = Cosmetics.getInstance().getPlayer(receiver);
-        if(amt <= 0) {
+        if(amt <= 0 || sender.equals(receiver)) {
             sender.sendMessage(ChatColor.RED + "You can't do that!");
-        }
-        if(csender.getCoins() >= amt) {
-            csender.changeCoins(-amt);
-            creceiver.changeCoins(-amt);
-            sender.sendMessage(ChatColor.GREEN + "You sent " + ChatColor.GOLD + String.valueOf(amt) + " coins " + ChatColor.GREEN + "to " + ChatColor.YELLOW + receiver.getName() + ".");
-            receiver.sendMessage(ChatColor.GREEN + "You received " + ChatColor.GOLD + String.valueOf(amt) + " coins " + ChatColor.GREEN + "from " + ChatColor.YELLOW + sender.getName() + ".");
         } else {
-            sender.sendMessage(ChatColor.RED + "You only have " + ChatColor.GOLD + csender.getCoins() + "!");
+            if(csender.getCoins() >= amt) {
+                csender.changeCoins(-amt);
+                creceiver.changeCoins(amt);
+                sender.sendMessage(ChatColor.GREEN + "You sent " + ChatColor.GOLD + String.valueOf(amt) + " coins " + ChatColor.GREEN + "to " + ChatColor.YELLOW + receiver.getName() + ChatColor.GREEN + ".");
+                receiver.sendMessage(ChatColor.GREEN + "You received " + ChatColor.GOLD + String.valueOf(amt) + " coins " + ChatColor.GREEN + "from " + ChatColor.YELLOW + sender.getName() + ChatColor.GREEN + ".");
+            } else {
+                sender.sendMessage(ChatColor.RED + "You only have " + ChatColor.GOLD + csender.getCoins() + " coins" + ChatColor.RED + "!");
+            }
         }
     }
     
     @Endpoint(target = {CommandSource.PLAYER})
-    public void sendMoneyFromAdmin(Player sender, @IntArg int amt) {
+    public void sendMoneyAdmin(Player sender, @IntArg int amt) {
         if(SpleefLeague.getInstance().getPlayerManager().get(sender).getRank().hasPermission(Rank.DEVELOPER)) {
             CosmeticPlayer cplayer = Cosmetics.getInstance().getPlayer(sender);
             cplayer.changeCoins(amt);

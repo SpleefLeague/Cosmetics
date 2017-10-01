@@ -5,10 +5,13 @@
  */
 package com.spleefleague.cosmetics.cosmetic.item;
 
+import com.spleefleague.entitybuilder.DBLoad;
+import com.spleefleague.entitybuilder.DBLoadable;
 import java.util.Arrays;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Projectile;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
@@ -16,7 +19,10 @@ import org.bukkit.inventory.meta.ItemMeta;
  *
  * @author NickM13
  */
-public class CosmeticClothesHat extends CosmeticBase {
+public class CosmeticHat extends CosmeticBase implements DBLoadable {
+    @DBLoad(fieldName="projectile")
+    Projectile useProjectile;
+    
     @Override
     public void activateCosmetic(Player player) {
         ItemStack item = new ItemStack(material);

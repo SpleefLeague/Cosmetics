@@ -17,7 +17,7 @@ import org.bukkit.inventory.ItemStack;
  *
  * @author NickM13
  */
-public class CosmeticClothesArmor extends CosmeticBase {
+public class CosmeticArmor extends CosmeticBase {
     @DBLoad(fieldName="armor")
     List<Material> armor;
     

@@ -22,8 +22,7 @@ public class ClothesListener implements Listener {
     private static ClothesListener instance;
     
     public static void init() {
-        if(instance == null)
-        {
+        if(instance == null) {
             instance = new ClothesListener();
             Bukkit.getPluginManager().registerEvents(instance, Cosmetics.getInstance());
         }

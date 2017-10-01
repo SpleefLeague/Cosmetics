@@ -6,8 +6,6 @@
 package com.spleefleague.cosmetics.cosmetic.item;
 
 import com.spleefleague.entitybuilder.DBLoad;
-import org.bukkit.Effect;
-import org.bukkit.Particle;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
@@ -16,17 +14,17 @@ import org.bukkit.potion.PotionEffectType;
  *
  * @author NickM13
  */
-public class CosmeticEffectParticle extends CosmeticBase {
+public class CosmeticStatus extends CosmeticBase {
     @DBLoad(fieldName="effect")
-    Particle effect;
+    String effect;
     
-    public CosmeticEffectParticle() {
+    public CosmeticStatus() {
         super();
     }
     
     @Override
     public void activateCosmetic(Player player) {
-        player.spawnParticle(effect, player.getLocation(), 5);
+        player.addPotionEffect(new PotionEffect(PotionEffectType.getByName(effect), 100, 1, true, false), true);
     }
     
     @Override
