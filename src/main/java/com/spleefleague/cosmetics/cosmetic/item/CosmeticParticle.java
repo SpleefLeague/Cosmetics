@@ -24,7 +24,7 @@ public class CosmeticParticle extends CosmeticBase {
     
     @Override
     public void activateCosmetic(Player player) {
-        Vector deviation = new Vector(Math.random() % 1 - 0.5, Math.random() % 1 - 0.5, Math.random() % 1 - 0.5);
+        Vector deviation = new Vector(Math.random() - 0.5, 0, Math.random() - 0.5);
         player.getWorld().spawnParticle(effect, player.getLocation().add(deviation), 50);
     }
     

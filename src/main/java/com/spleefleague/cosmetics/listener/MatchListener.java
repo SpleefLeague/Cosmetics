@@ -6,6 +6,7 @@
 package com.spleefleague.cosmetics.listener;
 
 import com.spleefleague.core.events.BattleEndEvent;
+import com.spleefleague.core.events.BattleStartEvent;
 import com.spleefleague.cosmetics.Cosmetics;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -28,10 +29,17 @@ public class MatchListener implements Listener {
         }
     }
     
-    @EventHandler(priority = EventPriority.HIGH)
-    public void statusEffectListener(BattleEndEvent e) {
+    @EventHandler(priority = EventPriority.MONITOR)
+    public void battleEndListener(BattleEndEvent e) {
         e.getBattle().getPlayers().forEach((p) -> {
             Cosmetics.getInstance().getPlayer((Player) p).applyCosmetics();
+        });
+    }
+    
+    @EventHandler(priority = EventPriority.MONITOR)
+    public void battleBeginListener(BattleStartEvent e) {
+        e.getBattle().getPlayers().forEach((p) -> {
+            Cosmetics.getInstance().getPlayer((Player) p).hideCosmetics();
         });
     }
 }

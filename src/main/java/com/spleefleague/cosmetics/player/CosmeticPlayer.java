@@ -175,6 +175,14 @@ public class CosmeticPlayer extends GeneralPlayer {
         }
     }
     
+    public void hideCosmetics() {
+        ItemStack air = new ItemStack(Material.AIR);
+        player.getInventory().setHelmet(air);
+        player.getInventory().setChestplate(air);
+        player.getInventory().setLeggings(air);
+        player.getInventory().setBoots(air);
+    }
+    
     public void activateCosmetic(CosmeticBase item) {
         item.activateCosmetic(player);
         switch(item.getSlot()) {
