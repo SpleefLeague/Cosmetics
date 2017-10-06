@@ -8,9 +8,9 @@ package com.spleefleague.cosmetics.commands;
 import static com.spleefleague.annotations.CommandSource.PLAYER;
 import com.spleefleague.annotations.Endpoint;
 import com.spleefleague.commands.command.BasicCommand;
+import com.spleefleague.core.SpleefLeague;
+import com.spleefleague.core.player.SLPlayer;
 import com.spleefleague.core.plugin.CorePlugin;
-import com.spleefleague.cosmetics.Cosmetics;
-import com.spleefleague.cosmetics.player.CosmeticPlayer;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
@@ -25,7 +25,7 @@ public class balance extends BasicCommand {
     
     @Endpoint(target = {PLAYER})
     public void showBalance(Player sender) {
-        CosmeticPlayer cplayer = Cosmetics.getInstance().getPlayer(sender);
-        sender.sendMessage(ChatColor.GREEN + "You have " + ChatColor.GOLD + cplayer.getCoins() + " coins" + ChatColor.GREEN + ".");
+        SLPlayer slplayer = SpleefLeague.getInstance().getPlayerManager().get(sender);
+        sender.sendMessage(ChatColor.GREEN + "You have " + ChatColor.GOLD + slplayer.getCoins() + " coins" + ChatColor.GREEN + ".");
     }
 }

@@ -26,8 +26,6 @@ public class CosmeticBase extends DBEntity implements DBLoadable, DBSaveable {
         Status,
         Shovel
     }
-    @DBLoad(fieldName="_id")
-    protected long id;
     @DBLoad(fieldName="name")
     protected String name;
     @DBLoad(fieldName="description")
@@ -35,7 +33,7 @@ public class CosmeticBase extends DBEntity implements DBLoadable, DBSaveable {
     @DBLoad(fieldName="slot")
     protected CosmeticSlot slot;
     @DBLoad(fieldName="price")
-    protected long price;
+    protected int price;
     @DBLoad(fieldName="material")
     protected Material material;
     @DBLoad(fieldName="submenu")
@@ -54,10 +52,6 @@ public class CosmeticBase extends DBEntity implements DBLoadable, DBSaveable {
         
     }
     
-    public long getId() {
-        return id;
-    }
-    
     public String getName() {
         return name;
     }
@@ -70,7 +64,7 @@ public class CosmeticBase extends DBEntity implements DBLoadable, DBSaveable {
         return slot;
     }
     
-    public long getPrice() {
+    public int getPrice() {
         return price;
     }
     

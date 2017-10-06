@@ -12,6 +12,7 @@ import com.spleefleague.annotations.PlayerArg;
 import com.spleefleague.commands.command.BasicCommand;
 import com.spleefleague.core.SpleefLeague;
 import com.spleefleague.core.player.Rank;
+import com.spleefleague.core.player.SLPlayer;
 import com.spleefleague.core.plugin.CorePlugin;
 import com.spleefleague.cosmetics.Cosmetics;
 import com.spleefleague.cosmetics.player.CosmeticPlayer;
@@ -28,19 +29,21 @@ public class pay extends BasicCommand {
     }
     
     @Endpoint(target = {CommandSource.PLAYER})
-    public void sendMoney(Player sender, @PlayerArg Player receiver, @IntArg int amt) {
+    public void sendMoney(Player sender, @PlayerArg Player receiver, @IntArg(min = 1) int amt) {
         CosmeticPlayer csender = Cosmetics.getInstance().getPlayer(sender);
         CosmeticPlayer creceiver = Cosmetics.getInstance().getPlayer(receiver);
-        if(amt <= 0 || sender.equals(receiver)) {
-            sender.sendMessage(ChatColor.RED + "You can't do that!");
+        SLPlayer slsender = SpleefLeague.getInstance().getPlayerManager().get(sender);
+        SLPlayer slreceiver = SpleefLeague.getInstance().getPlayerManager().get(receiver);
+        if(sender == receiver) {
+            error(sender, "You can't do that!");
         } else {
-            if(csender.getCoins() >= amt) {
-                csender.changeCoins(-amt);
-                creceiver.changeCoins(amt);
-                sender.sendMessage(ChatColor.GREEN + "You sent " + ChatColor.GOLD + String.valueOf(amt) + " coins " + ChatColor.GREEN + "to " + ChatColor.YELLOW + receiver.getName() + ChatColor.GREEN + ".");
-                receiver.sendMessage(ChatColor.GREEN + "You received " + ChatColor.GOLD + String.valueOf(amt) + " coins " + ChatColor.GREEN + "from " + ChatColor.YELLOW + sender.getName() + ChatColor.GREEN + ".");
+            if(slsender.getCoins() >= amt) {
+                slsender.changeCoins(-amt);
+                slreceiver.changeCoins(amt);
+                success(sender, "You sent " + ChatColor.GOLD + String.valueOf(amt) + " coins " + ChatColor.GREEN + "to " + ChatColor.YELLOW + receiver.getName() + ChatColor.GREEN + ".");
+                success(receiver, "You received " + ChatColor.GOLD + String.valueOf(amt) + " coins " + ChatColor.GREEN + "from " + ChatColor.YELLOW + sender.getName() + ChatColor.GREEN + ".");
             } else {
-                sender.sendMessage(ChatColor.RED + "You only have " + ChatColor.GOLD + csender.getCoins() + " coins" + ChatColor.RED + "!");
+                error(sender, "You only have " + ChatColor.GOLD + slsender.getCoins() + " coins" + ChatColor.RED + "!");
             }
         }
     }
@@ -49,9 +52,10 @@ public class pay extends BasicCommand {
     public void sendMoneyAdmin(Player sender, @IntArg int amt) {
         if(SpleefLeague.getInstance().getPlayerManager().get(sender).getRank().hasPermission(Rank.DEVELOPER)) {
             CosmeticPlayer cplayer = Cosmetics.getInstance().getPlayer(sender);
-            cplayer.changeCoins(amt);
-            if(amt >= 0) sender.sendMessage(ChatColor.GREEN + "You have given yourself " + ChatColor.GOLD + amt + " coins.");
-            else sender.sendMessage(ChatColor.RED + "You have taken from yourself " + ChatColor.GOLD + -amt + " coins.");
+            SLPlayer slplayer = SpleefLeague.getInstance().getPlayerManager().get(sender);
+            slplayer.changeCoins(amt);
+            if(amt >= 0) success(sender, "You have given yourself " + ChatColor.GOLD + amt + " coins" + ChatColor.GREEN + ".");
+            else error(sender, "You have taken " + ChatColor.GOLD + -amt + " coins" + ChatColor.RED + " from yourself.");
         }
     }
 }

@@ -28,6 +28,8 @@ public class MovementListener implements Listener {
     
     @EventHandler(priority = EventPriority.HIGH)
     public void statusEffectListener(PlayerMoveEvent e) {
-        Cosmetics.getInstance().getPlayer(e.getPlayer()).makeParticleEffect();
+        if(e.getFrom().distance(e.getTo()) > 0) {
+            Cosmetics.getInstance().getPlayer(e.getPlayer()).makeParticleEffect();
+        }
     }
 }

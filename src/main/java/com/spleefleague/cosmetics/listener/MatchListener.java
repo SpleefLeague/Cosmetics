@@ -29,14 +29,14 @@ public class MatchListener implements Listener {
         }
     }
     
-    @EventHandler(priority = EventPriority.MONITOR)
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void battleEndListener(BattleEndEvent e) {
         e.getBattle().getPlayers().forEach((p) -> {
             Cosmetics.getInstance().getPlayer((Player) p).applyCosmetics();
         });
     }
     
-    @EventHandler(priority = EventPriority.MONITOR)
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void battleBeginListener(BattleStartEvent e) {
         e.getBattle().getPlayers().forEach((p) -> {
             Cosmetics.getInstance().getPlayer((Player) p).hideCosmetics();

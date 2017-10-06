@@ -5,7 +5,9 @@
  */
 package com.spleefleague.cosmetics.player;
 
+import com.spleefleague.core.SpleefLeague;
 import com.spleefleague.core.player.GeneralPlayer;
+import com.spleefleague.core.player.SLPlayer;
 import com.spleefleague.cosmetics.Cosmetics;
 import com.spleefleague.cosmetics.cosmetic.item.CosmeticBase;
 import com.spleefleague.cosmetics.cosmetic.item.CosmeticBase.CosmeticSlot;
@@ -13,20 +15,16 @@ import com.spleefleague.cosmetics.cosmetic.item.CosmeticArmor;
 import com.spleefleague.cosmetics.cosmetic.item.CosmeticHat;
 import com.spleefleague.cosmetics.cosmetic.item.CosmeticParticle;
 import com.spleefleague.cosmetics.cosmetic.item.CosmeticStatus;
-import com.spleefleague.entitybuilder.DBEntity;
 import com.spleefleague.entitybuilder.DBLoad;
-import com.spleefleague.entitybuilder.DBLoadable;
 import com.spleefleague.entitybuilder.DBSave;
-import com.spleefleague.entitybuilder.DBSaveable;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
-import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.plugin.Plugin;
 
 /**
  *
@@ -34,9 +32,6 @@ import org.bukkit.plugin.Plugin;
  */
 public class CosmeticPlayer extends GeneralPlayer {
     private Map<String, CosmeticBase> unlockedCosmetics;
-    private Player player;
-    @DBLoad(fieldName="coins")
-    private long coins;
     @DBLoad(fieldName="activeHat")
     private String activeHat;
     @DBLoad(fieldName="activeArmor")
@@ -48,67 +43,32 @@ public class CosmeticPlayer extends GeneralPlayer {
     
     public CosmeticPlayer() {
         unlockedCosmetics = new HashMap<>();
-        activeHat = "";
-        activeArmor = "";
-        activeStatus = "";
-        activeParticle = "";
-        Bukkit.getScheduler().scheduleSyncRepeatingTask(Cosmetics.getInstance(), new Runnable() {
-            @Override
-            public void run() {
-                if(activeStatus != "") {
-                    Cosmetics.getInstance().getCosmetic(activeStatus).activateCosmetic(player);
-                }
-            }
-        }, 0L, 100L);
     }
     
-    public CosmeticPlayer(Player player) {
-        this();
-        this.player = player;
-    }
-    
-    public Player getPlayer() {
-        return player;
-    }
-    
-    @DBSave(fieldName="username")
-    public String getName() {
-        return player.getName();
-    }
-    
-    @DBLoad(fieldName="username")
-    public void setName(String name) {
-        player = Bukkit.getPlayer(name);
+    public static void init() {
+        Bukkit.getScheduler().scheduleSyncRepeatingTask(Cosmetics.getInstance(), () -> {
+            Cosmetics.getInstance().getPlayerManager().getAll().forEach((player) -> {
+                    if(player.activeStatus == null) {
+                        Cosmetics.getInstance().getCosmetic(player.activeStatus).activateCosmetic(player);
+                    }
+                });
+        }, 20, 20);
     }
     
     @DBSave(fieldName="unlocked")
-    public ArrayList<String> getUnlockedCosmetics() {
-        ArrayList<String> list = new ArrayList<String>();
-        for(CosmeticBase cosmetic : unlockedCosmetics.values()) {
+    public List<String> getUnlockedCosmetics() {
+        List<String> list = new ArrayList<>();
+        unlockedCosmetics.values().forEach((cosmetic) -> {
             list.add(cosmetic.getName());
-        }
+        });
         return list;
     }
     
     @DBLoad(fieldName="unlocked")
-    public void setUnlockedCosmetics(ArrayList<String> cosmetics) {
-        for(String name : cosmetics) {
+    public void setUnlockedCosmetics(List<String> cosmetics) {
+        cosmetics.forEach((name) -> {
             unlockedCosmetics.put(name, Cosmetics.getInstance().getCosmetics().getCosmetic(name));
-        }
-    }
-    
-    public void changeCoins(long coins) {
-        this.coins += coins;
-    }
-    
-    public void gainCoinsSpleef(long coins) {
-        player.sendMessage(ChatColor.GREEN + "You gained " + ChatColor.GOLD + coins + " coins" + ChatColor.GREEN + " from your last match!");
-        this.coins += coins;
-    }
-    
-    @DBSave(fieldName="coins")
-    public long getCoins() {
-        return coins;
+        });
     }
     
     @DBSave(fieldName="activeHat")
@@ -131,60 +91,65 @@ public class CosmeticPlayer extends GeneralPlayer {
         return activeParticle;
     }
     
+    public boolean hasCosmetic(String name) {
+        return unlockedCosmetics.containsKey(name);
+    }
+    
     public boolean hasCosmetic(CosmeticBase item) {
         return unlockedCosmetics.containsValue(item);
     }
     
     public boolean buyCosmetic(CosmeticBase item) {
-        if(coins > item.getPrice()) {
+        SLPlayer slp = SpleefLeague.getInstance().getPlayerManager().get(this.getPlayer());
+        if(slp.getCoins() > item.getPrice()) {
             unlockedCosmetics.put(item.getName(), item);
-            coins -= item.getPrice();
-            player.sendMessage("You bought " + item.getName() + "!");
-            player.sendMessage(coins + " coins remaining.");
+            slp.changeCoins(-item.getPrice());
+            this.getPlayer().sendMessage("You bought " + item.getName() + "!");
+            this.getPlayer().sendMessage(slp.getCoins() + " coins remaining.");
             return true;
         }
-        player.sendMessage(ChatColor.RED + "You dont have enough coins!");
+        this.getPlayer().sendMessage(ChatColor.RED + "You dont have enough coins!");
         return false;
     }
     
     public void applyCosmetics() {
         ItemStack air = new ItemStack(Material.AIR);
-        if(activeHat.equals("")) {
-            player.getInventory().setHelmet(air);
+        if(activeHat == null) {
+            this.getPlayer().getInventory().setHelmet(air);
         } else {
             CosmeticHat hat = (CosmeticHat) Cosmetics.getInstance().getCosmetic(activeHat);
-            hat.activateCosmetic(player);
+            hat.activateCosmetic(this.getPlayer());
         }
-        if(activeArmor.equals("")) {
-            player.getInventory().setChestplate(air);
-            player.getInventory().setLeggings(air);
-            player.getInventory().setBoots(air);
+        if(activeArmor == null) {
+            this.getPlayer().getInventory().setChestplate(air);
+            this.getPlayer().getInventory().setLeggings(air);
+            this.getPlayer().getInventory().setBoots(air);
         } else {
             CosmeticArmor armor = (CosmeticArmor) Cosmetics.getInstance().getCosmetic(activeArmor);
-            armor.activateCosmetic(player);
+            armor.activateCosmetic(this.getPlayer());
         }
-        if(activeStatus.equals("")) {
+        if(activeStatus == null) {
         } else {
             CosmeticStatus status = (CosmeticStatus) Cosmetics.getInstance().getCosmetic(activeStatus);
-            status.activateCosmetic(player);
+            status.activateCosmetic(this.getPlayer());
         }
-        if(activeParticle.equals("")) {
+        if(activeParticle == null) {
         } else {
             CosmeticParticle particle = (CosmeticParticle) Cosmetics.getInstance().getCosmetic(activeParticle);
-            particle.activateCosmetic(player);
+            particle.activateCosmetic(this.getPlayer());
         }
     }
     
     public void hideCosmetics() {
         ItemStack air = new ItemStack(Material.AIR);
-        player.getInventory().setHelmet(air);
-        player.getInventory().setChestplate(air);
-        player.getInventory().setLeggings(air);
-        player.getInventory().setBoots(air);
+        this.getPlayer().getInventory().setHelmet(air);
+        this.getPlayer().getInventory().setChestplate(air);
+        this.getPlayer().getInventory().setLeggings(air);
+        this.getPlayer().getInventory().setBoots(air);
     }
     
     public void activateCosmetic(CosmeticBase item) {
-        item.activateCosmetic(player);
+        item.activateCosmetic(this.getPlayer());
         switch(item.getSlot()) {
             case Hat:
                 activeHat = item.getName();
@@ -202,8 +167,8 @@ public class CosmeticPlayer extends GeneralPlayer {
     }
     
     public void makeParticleEffect() {
-        if(activeParticle != "") {
-            Cosmetics.getInstance().getCosmetic(activeParticle).activateCosmetic(player);
+        if(activeParticle != null) {
+            Cosmetics.getInstance().getCosmetic(activeParticle).activateCosmetic(this.getPlayer());
         }
     }
     
@@ -211,20 +176,20 @@ public class CosmeticPlayer extends GeneralPlayer {
         ItemStack none = new ItemStack(Material.AIR);
         switch(slot) {
             case Hat:
-                player.getInventory().setHelmet(none);
-                activeHat = "";
+                this.getPlayer().getInventory().setHelmet(none);
+                activeHat = null;
                 break;
             case Armor:
-                player.getInventory().setChestplate(none);
-                player.getInventory().setLeggings(none);
-                player.getInventory().setBoots(none);
-                activeArmor = "";
+                this.getPlayer().getInventory().setChestplate(none);
+                this.getPlayer().getInventory().setLeggings(none);
+                this.getPlayer().getInventory().setBoots(none);
+                activeArmor = null;
                 break;
             case Status:
-                activeStatus = "";
+                activeStatus = null;
                 break;
             case Particle:
-                activeParticle = "";
+                activeParticle = null;
                 break;
         }
     }
@@ -232,21 +197,21 @@ public class CosmeticPlayer extends GeneralPlayer {
     public void deactivateCosmeticSlot(int slot) {
         switch(slot) {
             case 39:
-                if(activeHat != "") {
-                    player.getInventory().setHelmet(new ItemStack(Material.AIR));
-                    player.sendMessage("Removed hat.");
-                    activeHat = "";
+                if(activeHat != null) {
+                    this.getPlayer().getInventory().setHelmet(new ItemStack(Material.AIR));
+                    this.getPlayer().sendMessage("Removed hat.");
+                    activeHat = null;
                 }
                 break;
             case 38:
             case 37:
             case 36:
-                if(activeArmor != "") {
-                    player.getInventory().setChestplate(new ItemStack(Material.AIR));
-                    player.getInventory().setLeggings(new ItemStack(Material.AIR));
-                    player.getInventory().setBoots(new ItemStack(Material.AIR));
-                    player.sendMessage("Removed armor.");
-                    activeArmor = "";
+                if(activeArmor != null) {
+                    this.getPlayer().getInventory().setChestplate(new ItemStack(Material.AIR));
+                    this.getPlayer().getInventory().setLeggings(new ItemStack(Material.AIR));
+                    this.getPlayer().getInventory().setBoots(new ItemStack(Material.AIR));
+                    this.getPlayer().sendMessage("Removed armor.");
+                    activeArmor = null;
                 }
                 break;
         }
