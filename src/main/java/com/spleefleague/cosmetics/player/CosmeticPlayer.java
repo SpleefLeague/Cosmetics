@@ -40,6 +40,7 @@ public class CosmeticPlayer extends GeneralPlayer {
     private String activeStatus;
     @DBLoad(fieldName="activeParticle")
     private String activeParticle;
+    private long lastParticleTime = 0;
     
     public CosmeticPlayer() {
         unlockedCosmetics = new HashMap<>();
@@ -101,7 +102,7 @@ public class CosmeticPlayer extends GeneralPlayer {
     
     public boolean buyCosmetic(CosmeticBase item) {
         SLPlayer slp = SpleefLeague.getInstance().getPlayerManager().get(this.getPlayer());
-        if(slp.getCoins() > item.getPrice()) {
+        if(slp.getCoins() >= item.getPrice()) {
             unlockedCosmetics.put(item.getName(), item);
             slp.changeCoins(-item.getPrice());
             this.getPlayer().sendMessage("You bought " + item.getName() + "!");
@@ -167,7 +168,8 @@ public class CosmeticPlayer extends GeneralPlayer {
     }
     
     public void makeParticleEffect() {
-        if(activeParticle != null) {
+        if(activeParticle != null && lastParticleTime < System.currentTimeMillis()) {
+            lastParticleTime = System.currentTimeMillis() + 100;
             Cosmetics.getInstance().getCosmetic(activeParticle).activateCosmetic(this.getPlayer());
         }
     }
