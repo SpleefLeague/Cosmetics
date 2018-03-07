@@ -66,7 +66,7 @@ public class Cosmetics extends CorePlugin implements PlayerHandling {
         MovementListener.init();
         StatusListener.init();
         CommandLoader.loadCommands(this, "com.spleefleague.cosmetics.commands");
-        createCosmeticMenus();
+        createCosmeticMenu();
     }
     
     @Override
@@ -104,86 +104,31 @@ public class Cosmetics extends CorePlugin implements PlayerHandling {
         return cosmeticManager;
     }
     
-    public void createCosmeticMenus()
-    {
+    
+    public void createCosmeticMenu() {
         InventoryMenuTemplateBuilder cosmeticMenu = SLMenu
                 .getNewGamemodeMenu()
                 .title("Cosmetics")
                 .displayName("Cosmetics")
                 .displayIcon(Material.CHEST)
                 .exitOnClickOutside(true);
-        InventoryMenuTemplateBuilder hatMenu = menu()
-                .title("Hats")
-                .displayName("Hats")
-                .displayIcon(Material.CHAINMAIL_HELMET);
-        InventoryMenuTemplateBuilder armorMenu = menu()
-                .title("Armor Sets")
-                .displayName("Armor Sets")
-                .displayIcon(Material.LEATHER_CHESTPLATE);
-        InventoryMenuTemplateBuilder shovelMenu = menu()
-                .title("Shovels")
-                .displayName("Shovels")
-                .displayIcon(Material.DIAMOND_SPADE);
-        InventoryMenuTemplateBuilder statusMenu = menu()
-                .title("Status")
-                .displayName("Status")
-                .displayIcon(Material.POTION);
-        InventoryMenuTemplateBuilder particleMenu = menu()
-                .title("Particles")
-                .displayName("Particles")
-                .displayIcon(Material.BLAZE_POWDER);
-        hatMenu.component(item()
-                .displayName("None")
-                .displayIcon(Material.BARRIER)
-                .onClick((event) -> {
-                    CosmeticPlayer cp = Cosmetics.getInstance().getPlayer(event.getPlayer());
-                    if(cp == null) return;
-                    cp.deactivateCosmetic(CosmeticSlot.Hat);
-                }));
-        armorMenu.component(item()
-                .displayName("None")
-                .displayIcon(Material.BARRIER)
-                .onClick((event) -> {
-                    CosmeticPlayer cp = Cosmetics.getInstance().getPlayer(event.getPlayer());
-                    if(cp == null) return;
-                    cp.deactivateCosmetic(CosmeticSlot.Armor);
-                }));
-        shovelMenu.component(item()
-                .displayName("None")
-                .displayIcon(Material.BARRIER)
-                .onClick((event) -> {
-                    CosmeticPlayer cp = Cosmetics.getInstance().getPlayer(event.getPlayer());
-                    if(cp == null) return;
-                    cp.deactivateCosmetic(CosmeticSlot.Shovel);
-                }));
-        statusMenu.component(item()
-                .displayName("None")
-                .displayIcon(Material.BARRIER)
-                .onClick((event) -> {
-                    CosmeticPlayer cp = Cosmetics.getInstance().getPlayer(event.getPlayer());
-                    if(cp == null) return;
-                    cp.deactivateCosmetic(CosmeticSlot.Status);
-                }));
-        particleMenu.component(item()
-                .displayName("None")
-                .displayIcon(Material.BARRIER)
-                .onClick((event) -> {
-                    CosmeticPlayer cp = Cosmetics.getInstance().getPlayer(event.getPlayer());
-                    if(cp == null) return;
-                    cp.deactivateCosmetic(CosmeticSlot.Particle);
-                }));
+        InventoryMenuTemplateBuilder hatMenu = createHatMenu();
+        InventoryMenuTemplateBuilder armorMenu = createArmorMenu();
+        InventoryMenuTemplateBuilder shovelMenu = createShovelMenu();
+        InventoryMenuTemplateBuilder statusMenu = createStatusMenu();
+        InventoryMenuTemplateBuilder particleMenu = createParticleMenu();
         for(CosmeticBase cosmeticItem : cosmeticManager.getCosmetics().values()) {
             InventoryMenuTemplateBuilder cMenu = menu().title("Confirm Purchase");
             ItemMeta meta;
-            ItemStack green = new ItemStack(Material.CONCRETE, 1, (short) 5);
+            ItemStack green = cosmeticItem.getItemStack();
             meta = green.getItemMeta();
-            meta.setDisplayName(cosmeticItem.getName());
+            meta.setLocalizedName(ChatColor.GREEN + cosmeticItem.getName());
             meta.setLore(Arrays.asList(ChatColor.AQUA + cosmeticItem.getDescription()));
             green.setItemMeta(meta);
             ItemStack red = new ItemStack(Material.CONCRETE, 1, (short) 14);
             meta = red.getItemMeta();
-            meta.setDisplayName(cosmeticItem.getName());
-            meta.setLore(Arrays.asList(ChatColor.GOLD + "" + cosmeticItem.getPrice() + " coins", ChatColor.AQUA + cosmeticItem.getDescription()));
+            meta.setLocalizedName(ChatColor.RED + cosmeticItem.getName());
+            meta.setLore(Arrays.asList(ChatColor.AQUA + cosmeticItem.getDescription(), ChatColor.GOLD + "" + cosmeticItem.getPrice() + " coins"));
             red.setItemMeta(meta);
             InventoryMenuItemTemplateBuilder cItem = item()
                     .displayItem((slp) -> Cosmetics.getInstance().getPlayer(slp.getPlayer()).hasCosmetic(Cosmetics.getInstance().getCosmetic(cosmeticItem.getName())) ? green : red)
@@ -191,6 +136,8 @@ public class Cosmetics extends CorePlugin implements PlayerHandling {
                         SLPlayer slp = SpleefLeague.getInstance().getPlayerManager().get(event.getPlayer());
                         if(!Cosmetics.getInstance().getPlayer(event.getPlayer()).hasCosmetic(cosmeticItem.getName())) {
                             cMenu.build().construct(slp).open();
+                        } else {
+                            Cosmetics.getInstance().getPlayer(event.getPlayer()).activateCosmetic(cosmeticItem);
                         }
                     });
             cMenu.component(4, 0, item()
@@ -250,5 +197,85 @@ public class Cosmetics extends CorePlugin implements PlayerHandling {
             }
         }
         cosmeticMenu.component(0, hatMenu).component(1, armorMenu).component(4, shovelMenu).component(7, statusMenu).component(8, particleMenu);
+    }
+    
+    public InventoryMenuTemplateBuilder createHatMenu() {
+        InventoryMenuTemplateBuilder builder = menu()
+                .title("Hats")
+                .displayName("Hats")
+                .displayIcon(Material.CHAINMAIL_HELMET);
+        builder.component(item()
+                .displayName("None")
+                .displayIcon(Material.BARRIER)
+                .onClick((event) -> {
+                    CosmeticPlayer cp = Cosmetics.getInstance().getPlayer(event.getPlayer());
+                    if(cp == null) return;
+                    cp.deactivateCosmetic(CosmeticSlot.Hat);
+                }));
+        return builder;
+    }
+    
+    public InventoryMenuTemplateBuilder createArmorMenu() {
+        InventoryMenuTemplateBuilder builder = menu()
+                .title("Armor Sets")
+                .displayName("Armor Sets")
+                .displayIcon(Material.DIAMOND_CHESTPLATE);
+        builder.component(item()
+                .displayName("None")
+                .displayIcon(Material.BARRIER)
+                .onClick((event) -> {
+                    CosmeticPlayer cp = Cosmetics.getInstance().getPlayer(event.getPlayer());
+                    if(cp == null) return;
+                    cp.deactivateCosmetic(CosmeticSlot.Armor);
+                }));
+        return builder;
+    }
+    
+    public InventoryMenuTemplateBuilder createShovelMenu() {
+        InventoryMenuTemplateBuilder builder = menu()
+                .title("Shovels")
+                .displayName("Shovels")
+                .displayIcon(Material.DIAMOND_SPADE);
+        builder.component(item()
+                .displayName("None")
+                .displayIcon(Material.BARRIER)
+                .onClick((event) -> {
+                    CosmeticPlayer cp = Cosmetics.getInstance().getPlayer(event.getPlayer());
+                    if(cp == null) return;
+                    cp.deactivateCosmetic(CosmeticSlot.Hat);
+                }));
+        return builder;
+    }
+    
+    public InventoryMenuTemplateBuilder createStatusMenu() {
+        InventoryMenuTemplateBuilder builder = menu()
+                .title("Status")
+                .displayName("Status")
+                .displayIcon(Material.POTION);
+        builder.component(item()
+                .displayName("None")
+                .displayIcon(Material.BARRIER)
+                .onClick((event) -> {
+                    CosmeticPlayer cp = Cosmetics.getInstance().getPlayer(event.getPlayer());
+                    if(cp == null) return;
+                    cp.deactivateCosmetic(CosmeticSlot.Status);
+                }));
+        return builder;
+    }
+    
+    public InventoryMenuTemplateBuilder createParticleMenu() {
+        InventoryMenuTemplateBuilder builder = menu()
+                .title("Particles")
+                .displayName("Particles")
+                .displayIcon(Material.BLAZE_POWDER);
+        builder.component(item()
+                .displayName("None")
+                .displayIcon(Material.BARRIER)
+                .onClick((event) -> {
+                    CosmeticPlayer cp = Cosmetics.getInstance().getPlayer(event.getPlayer());
+                    if(cp == null) return;
+                    cp.deactivateCosmetic(CosmeticSlot.Particle);
+                }));
+        return builder;
     }
 }
