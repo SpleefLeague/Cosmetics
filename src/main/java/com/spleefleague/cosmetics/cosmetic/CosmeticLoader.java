@@ -17,6 +17,8 @@ import com.spleefleague.entitybuilder.DBSaveable;
 import com.spleefleague.entitybuilder.EntityBuilder;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Vector;
 import org.bson.Document;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
@@ -116,7 +118,6 @@ public class CosmeticLoader implements DBLoadable, DBSaveable {
     }
     
     public ItemStack getCosmeticItem(String name) {
-        
         if(cosmeticItems.containsKey(name))
             return cosmeticItems.get(name).getItemStack();
         else
@@ -125,6 +126,16 @@ public class CosmeticLoader implements DBLoadable, DBSaveable {
     
     public Map<String, CosmeticBase> getCosmetics() {
         return cosmeticItems;
+    }
+    
+    public Vector<CosmeticBase> getCosmeticsBySlot(CosmeticBase.CosmeticSlot cosmeticSlot) {
+        Vector<CosmeticBase> cosmeticList = new Vector<CosmeticBase>();
+        for(Entry<String, CosmeticBase> entry : cosmeticItems.entrySet()) {
+            if(entry.getValue().getSlot().equals(cosmeticSlot)) {
+                cosmeticList.add(entry.getValue());
+            }
+        }
+        return cosmeticList;
     }
     
     public void addCosmetic(CosmeticBase item) {

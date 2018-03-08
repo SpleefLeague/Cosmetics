@@ -15,3 +15,8 @@ commands:
         aliases: cosmetics
         usage:
             /<command> [player] [amount]
+    purchase:
+        description: Purchase a cosmetic.
+        aliases: buy
+        usage:
+            /<command> [cosmeticName]

@@ -11,7 +11,6 @@ import java.util.Arrays;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
-import org.bukkit.entity.Projectile;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
@@ -20,12 +19,12 @@ import org.bukkit.inventory.meta.ItemMeta;
  * @author NickM13
  */
 public class CosmeticHat extends CosmeticBase implements DBLoadable {
-    @DBLoad(fieldName="projectile")
-    Projectile useProjectile;
+    @DBLoad(fieldName="metadata")
+    int metadata;
     
     @Override
     public void activateCosmetic(Player player) {
-        ItemStack item = new ItemStack(material);
+        ItemStack item = new ItemStack(material, 1, (short)metadata);
         ItemMeta meta = item.getItemMeta();
         meta.setDisplayName(name);
         meta.setLore(Arrays.asList(ChatColor.AQUA + description));
